@@ -2,16 +2,22 @@ import requests
 import json
 import pandas as pd
 
+'''https://servicodados.ibge.gov.br/api/v3/agregados/2221/periodos/1966|1967|1968|1969|1973|1974|1976|1977|1978|1979|1981|1982|1983|1984|1988|1989|1990|1992|1993|1994|1995/variaveis/1149|1150|1151|215|811?localidades=N1[all]&classificacao=12123[101229,101230]'''
 '''api_agregados = 'https://servicodados.ibge.gov.br/api/v3/agregados/6407/variaveis/606|6541?classificacao=2[4,5]&localidades=N6[4205407]' ''' #exemplo de query
 
-def consulta_ibge(tabela, variaveis, classificacao_categorias, localidades):
+def consulta_ibge(tabela, variaveis, classificacao_categorias, localidades, periodos=''):
     '''ex. de tabela: 6407\n
+       ex. de período: 1966|1977|2022|2023\n
        ex. de variaveis 606|6541 --> busca as variaveis 606 e 6541\n
        ex. de classificacao 2[4,5] --> busca na classificacao 2 as categorais 4 e 5\n
-       ex. de localidade N6[4205407] --> busca na localidade de nível N6 (municipios) o município 4205407\n
+       ex. de localidade N6[4205407] ou N1[all] --> busca na localidade de nível N6 (municipios) o município 4205407\n
     '''
+    
     api = 'https://servicodados.ibge.gov.br/api/v3/agregados/'
-    query = api + tabela + '/variaveis/' + variaveis + '?classificacao=' + classificacao_categorias + '&localidades=' + localidades
+    if periodos != '':
+        periodos = '/periodos/' + periodos
+
+    query = api + tabela + periodos + '/variaveis/' + variaveis + '?classificacao=' + classificacao_categorias + '&localidades=' + localidades
     r = requests.get(query)
     data = json.loads(r.text)
     return data
